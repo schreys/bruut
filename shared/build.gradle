@@ -1,0 +1,27 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+android {
+    namespace 'com.stubru.bruut.shared'
+    compileSdkVersion 34
+
+    defaultConfig {
+        minSdkVersion 28
+        targetSdkVersion 34
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation libs.androidx.media
+    implementation libs.androidx.media3.exoplayer
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.jsoup
+    implementation libs.kotlinx.serialization.json
+    implementation libs.okhttp
+}
