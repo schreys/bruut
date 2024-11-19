@@ -2,6 +2,7 @@ package com.stubru.bruut.shared
 
 import android.content.ContentResolver
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -103,12 +104,12 @@ class MyMusicService : MediaBrowserServiceCompat() {
 
                 session.setMetadata(metadata)
 
-                val mediaItem = androidx.media3.common.MediaItem.Builder()
-                    .setUri("http://icecast.vrtcdn.be/stubru_bruut-high.mp3")
-                    .setLiveConfiguration(androidx.media3.common.MediaItem.LiveConfiguration.Builder().build())
-                    .build()
+                val intro = androidx.media3.common.MediaItem.fromUri("https://www.myinstants.com/media/sounds/duke_nukem_time_to_kick_ass.mp3");
+                val radio = androidx.media3.common.MediaItem.fromUri("http://icecast.vrtcdn.be/stubru_bruut-high.mp3");
 
-                exoPlayer.setMediaItem(mediaItem)
+                exoPlayer.clearMediaItems()
+                exoPlayer.addMediaItem(intro)
+                exoPlayer.addMediaItem(radio)
                 exoPlayer.prepare()
                 exoPlayer.play()
 
@@ -161,6 +162,7 @@ class MyMusicService : MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
+        println("oncreate")
 
         session = MediaSessionCompat(this, "MyMusicService")
         sessionToken = session.sessionToken
@@ -227,9 +229,13 @@ class MyMusicService : MediaBrowserServiceCompat() {
             return
         }
 
+        val icon = BitmapFactory.decodeResource(resources, R.drawable.rock)
+
         val description = MediaDescriptionCompat.Builder()
             .setMediaId("1")
             .setTitle("Zware Gitaren")
+            .setIconBitmap(icon) // does not work in emulator but does work on phone
+            .setIconUri(albumArt) // works on emulator but not on phone
             .build()
 
         val mediaItem = MediaItem(description, FLAG_PLAYABLE)
