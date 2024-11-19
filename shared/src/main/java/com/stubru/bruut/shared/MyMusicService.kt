@@ -1,9 +1,11 @@
 package com.stubru.bruut.shared
 
+import android.content.ContentResolver
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
@@ -13,7 +15,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media.MediaBrowserServiceCompat
-import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +81,7 @@ class MyMusicService : MediaBrowserServiceCompat() {
     private lateinit var audioManager: AudioManager
 
     private var scrapingJob: Job? = null
+    private lateinit var albumArt: Uri
 
     private val callback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
@@ -96,9 +98,10 @@ class MyMusicService : MediaBrowserServiceCompat() {
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "VRT Studio Brussel")
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Zware Gitaren")
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, -1)
+                    .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, albumArt.toString())
                     .build()
-                session.setMetadata(metadata)
 
+                session.setMetadata(metadata)
 
                 val mediaItem = androidx.media3.common.MediaItem.Builder()
                     .setUri("http://icecast.vrtcdn.be/stubru_bruut-high.mp3")
@@ -184,6 +187,13 @@ class MyMusicService : MediaBrowserServiceCompat() {
             .build()
 
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+        albumArt = Uri.Builder()
+            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            .authority(resources.getResourcePackageName(R.drawable.rock))
+            .appendPath(resources.getResourceTypeName(R.drawable.rock))
+            .appendPath(resources.getResourceEntryName(R.drawable.rock))
+            .build()
     }
 
     override fun onDestroy() {
